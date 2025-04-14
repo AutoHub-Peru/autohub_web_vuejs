@@ -1,15 +1,15 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
-      <a class="navbar-brand" @click="goToProfile()" style="cursor: pointer">{{
-        currentUser.username
+      <a class="navbar-brand" style="color: #000 !important">{{
+        currentUser.email
       }}</a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
             <a @click="logout" class="nav-link" style="cursor: pointer">
               <i class="fa-fas-logout"></i>
-              <p class="ml-2">Cerrar Sesión</p>
+              <p class="ml-2" style="color: #000 !important">Cerrar Sesión</p>
             </a>
           </li>
         </ul>
@@ -31,9 +31,6 @@ export default {
     };
   },
   methods: {
-    goToProfile() {
-      this.$router.push(`/profile/${this.currentUser.id}`);
-    },
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },

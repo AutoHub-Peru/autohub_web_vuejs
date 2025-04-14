@@ -4,17 +4,13 @@
       <template slot="links">
         <sidebar-link to="/home" name="Home" icon="ti-panel" />
         <sidebar-link to="/posts" name="Subastas" icon="ti-layout-grid2" />
-        <!-- <sidebar-link to="/images" name="Imágenes" icon="ti-image" />
-        <sidebar-link to="/audios" name="Audios" icon="ti-music-alt" />
-        <sidebar-link to="/media" name="Galería" icon="ti-bookmark-alt" /> -->
         <sidebar-link to="/profile" name="Perfil" icon="ti-user" />
       </template>
     </side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
       <dashboard-content @click.native="toggleSidebar"> </dashboard-content>
-
-      <!-- <content-footer></content-footer> -->
+      <mobile-menu></mobile-menu>
     </div>
   </div>
 </template>

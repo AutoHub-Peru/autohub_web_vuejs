@@ -170,7 +170,7 @@ export default {
           verticalAlign: "top",
           type: "warning",
         });
-        console.log(error);
+        console.log(error.status);
       }
     },
     updatePassword() {
