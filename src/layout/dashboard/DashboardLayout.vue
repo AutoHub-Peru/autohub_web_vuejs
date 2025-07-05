@@ -2,7 +2,7 @@
   <div v-if="currentUser" class="wrapper">
     <side-bar>
       <template slot="links">
-        <sidebar-link to="/home" name="Home" icon="ti-panel" />
+        <sidebar-link to="/home" name="Consulta Vehicular" icon="ti-panel" />
         <sidebar-link to="/posts" name="Subastas" icon="ti-layout-grid2" />
         <sidebar-link to="/profile" name="Perfil" icon="ti-user" />
       </template>

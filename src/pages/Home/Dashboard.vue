@@ -1,22 +1,87 @@
 <template>
   <v-card dark class="p-5">
     <v-container>
-      <!-- Search Section -->
-      <v-row class="mb-6" align="center">
-        <v-col cols="10" md="10">
-          <v-text-field
-            v-model="search"
-            label="Busca por placa"
-            maxlength="6"
-            type="text"
-            dense
-            clearable
-            @click:clear="cleanFilters"
-          />
+      <v-row>
+        <v-col cols="8" md="8">
+          <!-- Search Section -->
+          <v-row class="mb-6" align="center">
+            <v-col cols="4" md="4">
+              <v-text-field
+                v-model="search.licensePlate"
+                label="Placa"
+                maxlength="6"
+                type="text"
+                dense
+                clearable
+                @click:clear="cleanFilters"
+              />
+            </v-col>
+            <v-col cols="4" md="4">
+              <v-text-field
+                v-model="search.brand"
+                label="Marca"
+                type="text"
+                dense
+                clearable
+                @click:clear="cleanFilters"
+              />
+            </v-col>
+            <v-col cols="4" md="4">
+              <v-text-field
+                v-model="search.model"
+                label="Modelo"
+                type="text"
+                dense
+                clearable
+                @click:clear="cleanFilters"
+              />
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="6" md="6">
+              <v-text-field
+                v-model="search.year"
+                label="Año"
+                maxlength="4"
+                type="number"
+                :min="0"
+                :max="2025"
+                dense
+                clearable
+                @click:clear="cleanFilters"
+              />
+            </v-col>
+            <v-col cols="6" md="6">
+              <v-text-field
+                v-model="search.mileage"
+                label="Kilometraje"
+                maxlength="9"
+                type="number"
+                :min="0"
+                dense
+                clearable
+                @click:clear="cleanFilters"
+              />
+            </v-col>
+          </v-row>
+
+          <v-row>
+            <v-col cols="12" md="12">
+              <v-btn @click="searchPost" block color="primary" dark
+                >Iniciar búsqueda</v-btn
+              >
+            </v-col>
+          </v-row>
         </v-col>
 
-        <v-col cols="2" md="2">
-          <v-btn @click="searchPost" block color="primary" dark>Buscar</v-btn>
+        <v-col class="text-center" cols="4" md="4">
+          <img
+            class="ml-5 border border-black rounded p-2"
+            src="@/assets/img/logo.png"
+            alt="autohub"
+            height="250"
+          />
         </v-col>
       </v-row>
 
@@ -37,19 +102,14 @@
                 class="p-4"
               >
                 <v-card color="#2c2c2c">
-                  <v-card-title class="text-subtitle-1 font-weight-medium pl-4">
-                    {{ page.name.replace(/\b\w/g, (l) => l.toUpperCase()) }}
-                  </v-card-title>
-                  <v-img :src="page.image" cover> </v-img>
-                  <v-card-text>
-                    <a
-                      :href="page.link"
-                      target="_blank"
-                      class="text-truncate pl-2"
+                  <a :href="page.link" target="_blank">
+                    <v-card-title
+                      class="text-subtitle-1 font-weight-medium pl-4"
                     >
-                      {{ truncateText(page.link) }}
-                    </a>
-                  </v-card-text>
+                      {{ page.name.replace(/\b\w/g, (l) => l.toUpperCase()) }}
+                    </v-card-title>
+                    <v-img :src="page.image" cover> </v-img>
+                  </a>
                 </v-card>
               </v-col>
             </v-row>
@@ -64,7 +124,13 @@
 export default {
   data() {
     return {
-      search: "",
+      search: {
+        licensePlate: "",
+        brand: "",
+        model: "",
+        year: 0,
+        mileage: 0,
+      },
       links: [],
     };
   },
@@ -73,6 +139,8 @@ export default {
       if (!this.validateSearch()) return;
 
       this.links = [
+        //SUPERBID
+        //ATU
         {
           id: 1,
           name: "sunarp",
@@ -82,14 +150,14 @@ export default {
               name: "consulta vehicular",
               link: "https://consultavehicular.sunarp.gob.pe/consulta-vehicular/inicio",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/sunarp_consulta_vehicular.png",
             },
             {
               id: 12,
               name: "conoce aqui",
               link: "https://conoce-aqui.sunarp.gob.pe/conoce-aqui/inicio",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/sunarp_conoce_aqui.png",
             },
           ],
         },
@@ -102,14 +170,14 @@ export default {
               name: "papeletas callao",
               link: "https://pagopapeletascallao.pe/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/sat_callao.png",
             },
             {
               id: 22,
               name: "pagos lima",
               link: "https://www.sat.gob.pe/pagosenlinea/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/sat_lima.png",
             },
           ],
         },
@@ -122,14 +190,14 @@ export default {
               name: "record infracciones",
               link: "https://www.sutran.gob.pe/consultas/record-de-infracciones/record-de-infracciones/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/sutran_record_infracciones.png",
             },
             {
               id: 32,
               name: "verifica infraccion",
               link: "https://www.sutran.gob.pe/consultas/record-de-infracciones/verifica-tu-infraccion/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/sutran_verifica_infraccion.png",
             },
           ],
         },
@@ -142,35 +210,35 @@ export default {
               name: "papeletas trujillo",
               link: "https://satt.gob.pe/servicios/record-de-infracciones",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/papeletas_trujillo.png",
             },
             {
               id: 42,
               name: "papeletas ica",
               link: "https://m.satica.gob.pe/consultapapeletas.php",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/papeletas_ica.png",
             },
             {
               id: 43,
               name: "papeletas arequipa",
               link: "https://www.muniarequipa.gob.pe/consulta-de-papeletas/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/papeletas_arequipa.png",
             },
             {
               id: 44,
               name: "impuesto vehicular arequipa",
               link: "https://muniarequipa.gob.pe/oficina-virtual/impuesto-vehicular.html",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/impuestos_vehicular_arequipa.png",
             },
             {
               id: 45,
               name: "pagos piura",
               link: "https://satp.gob.pe/sistema-pagos/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/pagos_piura.png",
             },
           ],
         },
@@ -183,14 +251,14 @@ export default {
               name: "credito gas",
               link: "https://fise.minem.gob.pe:23308/consulta-taller/pages/consultaTaller/inicio",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/credito_gas.png",
             },
             {
               id: 52,
               name: "gas gnv",
               link: "https://infogas.com.pe/consulta-placa/",
               image:
-                "https://www.consultavehicular.pe/wp-content/uploads/2019/06/Consulta-vehicular-por-placa.jpg",
+                "https://novastoragestaging1.blob.core.windows.net/files/gas_gnv.png",
             },
           ],
         },

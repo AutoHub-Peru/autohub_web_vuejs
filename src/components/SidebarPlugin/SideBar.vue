@@ -12,7 +12,7 @@
     <div class="sidebar-wrapper" id="style-3">
       <div class="logo">
         <a href="#" class="simple-text" style="text-align: center">
-          <img src="@/assets/img/logo.png" alt="deepart" height="250" />
+          <img src="@/assets/img/logo.png" alt="deepart" height="150" />
         </a>
       </div>
       <slot> </slot>
