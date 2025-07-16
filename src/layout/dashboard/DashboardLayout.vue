@@ -3,8 +3,8 @@
     <side-bar>
       <template slot="links">
         <sidebar-link to="/home" name="Consulta Vehicular" icon="ti-panel" />
-        <sidebar-link to="/posts" name="Subastas" icon="ti-layout-grid2" />
         <sidebar-link to="/profile" name="Perfil" icon="ti-user" />
+        <!-- <sidebar-link to="/posts" name="Subastas" icon="ti-layout-grid2" /> -->
       </template>
     </side-bar>
     <div class="main-panel">

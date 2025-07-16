@@ -13,7 +13,7 @@
                   <v-col>
                     <!-- Search Section -->
                     <v-row class="mb-6" align="center">
-                      <v-col cols="4" md="4">
+                      <v-col cols="3" md="3">
                         <v-text-field
                           v-model="search.licensePlate"
                           label="Placa"
@@ -29,7 +29,7 @@
                           "
                         />
                       </v-col>
-                      <v-col cols="4" md="4">
+                      <v-col cols="3" md="3">
                         <v-text-field
                           v-model="search.brand"
                           label="Marca"
@@ -39,7 +39,7 @@
                           @click:clear="cleanFilters(search.brand)"
                         />
                       </v-col>
-                      <v-col cols="4" md="4">
+                      <v-col cols="3" md="3">
                         <v-text-field
                           v-model="search.model"
                           label="Modelo"
@@ -49,21 +49,32 @@
                           @click:clear="cleanFilters(search.model)"
                         />
                       </v-col>
+                      <v-col cols="3" md="3">
+                        <v-text-field
+                          v-model="search.color"
+                          label="Color"
+                          type="text"
+                          dense
+                          clearable
+                          @click:clear="cleanFilters(search.color)"
+                        />
+                      </v-col>
                     </v-row>
 
                     <v-row>
                       <v-col cols="4" md="4">
                         <v-text-field
-                          v-model.number="search.mileage"
+                          v-model="search.mileage"
                           label="Kilometraje"
                           type="text"
                           maxlength="6"
                           dense
+                          suffix="km"
                           clearable
                           :rules="[mileageRule]"
                           @click:clear="cleanFilters(search.mileage)"
                           @input="
-                            this.search.mileage = $event.target.value.replace(
+                            search.mileage = search.mileage.replace(
                               /[^0-9]/g,
                               ''
                             )
@@ -72,7 +83,7 @@
                       </v-col>
                       <v-col cols="4" md="4">
                         <v-text-field
-                          v-model.number="search.year"
+                          v-model="search.year"
                           label="Año"
                           type="text"
                           maxlength="4"
@@ -81,28 +92,27 @@
                           :rules="[yearRule]"
                           @click:clear="cleanFilters(search.year)"
                           @input="
-                            this.search.year = $event.target.value.replace(
-                              /[^0-9]/g,
-                              ''
-                            )
+                            search.year = search.year.replace(/[^0-9]/g, '')
                           "
                         />
                       </v-col>
                       <v-col cols="4" md="4">
                         <v-text-field
-                          v-model.number="search.price"
+                          v-model="search.price"
                           label="Precio"
                           type="text"
                           maxlength="12"
                           dense
+                          prefix="$"
                           clearable
                           :rules="[priceRule]"
                           @click:clear="cleanFilters(search.price)"
                           @input="
-                            this.search.price = $event.target.value.replace(
-                              /[^0-9]/g,
-                              ''
-                            )
+                            this.search.price = $event.target.value
+                              .toString()
+                              .replace(/,/g, '')
+                              .replace(/[^0-9.]/g, '')
+                              .replace(/(\..*)\./g, '$1')
                           "
                         />
                       </v-col>
@@ -125,12 +135,16 @@
                           maxlength="7"
                           type="text"
                           dense
+                          prefix="S/."
                           clearable
                           :rules="[priceRule]"
                           @click:clear="cleanFilters(costs.impuestoVehicular)"
                           @input="
-                            this.costs.impuestoVehicular =
-                              $event.target.value.replace(/[^0-9]/g, '')
+                            this.costs.impuestoVehicular = $event.target.value
+                              .replace(/,/g, '')
+                              .replace(/[^0-9.]/g, '')
+                              .replace(/^(\d*\.\d{0,2}).*$/, '$1')
+                              .replace(/(\..*)\./g, '$1')
                           "
                         />
                       </v-col>
@@ -141,12 +155,16 @@
                           maxlength="7"
                           type="text"
                           dense
+                          prefix="S/."
                           clearable
                           :rules="[priceRule]"
                           @click:clear="cleanFilters(costs.multasTributarias)"
                           @input="
-                            this.costs.multasTributarias =
-                              $event.target.value.replace(/[^0-9]/g, '')
+                            this.costs.multasTributarias = $event.target.value
+                              .replace(/,/g, '')
+                              .replace(/[^0-9.]/g, '')
+                              .replace(/^(\d*\.\d{0,2}).*$/, '$1')
+                              .replace(/(\..*)\./g, '$1')
                           "
                         />
                       </v-col>
@@ -155,16 +173,18 @@
                           v-model="costs.papeletas"
                           label="Papeletas"
                           maxlength="7"
+                          prefix="S/."
                           type="text"
                           dense
                           clearable
                           :rules="[priceRule]"
                           @click:clear="cleanFilters(costs.papeletas)"
                           @input="
-                            this.costs.papeletas = $event.target.value.replace(
-                              /[^0-9]/g,
-                              ''
-                            )
+                            this.costs.papeletas = $event.target.value
+                              .replace(/,/g, '')
+                              .replace(/[^0-9.]/g, '')
+                              .replace(/^(\d*\.\d{0,2}).*$/, '$1')
+                              .replace(/(\..*)\./g, '$1')
                           "
                         />
                       </v-col>
@@ -175,6 +195,7 @@
                         <v-text-field
                           v-model="costs.soat"
                           label="Soat"
+                          prefix="S/."
                           maxlength="7"
                           type="text"
                           dense
@@ -182,10 +203,11 @@
                           :rules="[priceRule]"
                           @click:clear="cleanFilters(costs.soat)"
                           @input="
-                            this.costs.soat = $event.target.value.replace(
-                              /[^0-9]/g,
-                              ''
-                            )
+                            this.costs.soat = $event.target.value
+                              .replace(/,/g, '')
+                              .replace(/[^0-9.]/g, '')
+                              .replace(/^(\d*\.\d{0,2}).*$/, '$1')
+                              .replace(/(\..*)\./g, '$1')
                           "
                         />
                       </v-col>
@@ -193,18 +215,13 @@
                         <v-text-field
                           v-model="costs.gnv"
                           label="GNV"
-                          maxlength="7"
+                          prefix="S/."
                           type="text"
                           dense
                           clearable
                           :rules="[priceRule]"
-                          @click:clear="cleanFilters(costs.gnv)"
-                          @input="
-                            this.costs.gnv = $event.target.value.replace(
-                              /[^0-9]/g,
-                              ''
-                            )
-                          "
+                          @click:clear="cleanFilters('gnv')"
+                          @input="onInputDecimal('gnv', $event)"
                         />
                       </v-col>
                       <v-col cols="4" md="4"> </v-col>
@@ -224,13 +241,32 @@
           </v-row>
         </v-col>
 
-        <v-col class="text-center" cols="3" md="3">
-          <img
-            class="border border-black rounded p-2"
-            src="@/assets/img/logo.png"
-            alt="autohub"
-            height="250"
-          />
+        <v-col cols="3" md="3" class="d-flex align-center justify-center">
+          <div
+            style="
+              width: 100%;
+              height: 250px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <v-img
+              v-if="carImageSrc"
+              :src="carImageSrc"
+              max-height="250"
+              max-width="250"
+              contain
+              class="border border-black rounded p-2"
+            />
+            <img
+              v-else
+              src="@/assets/img/logo.png"
+              alt="autohub"
+              style="max-height: 250px; max-width: 250px"
+              class="border border-black rounded p-2"
+            />
+          </div>
         </v-col>
       </v-row>
 
@@ -285,33 +321,43 @@
 </template>
 
 <script>
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import axios from "axios";
+
 export default {
   data() {
     return {
       search: {
         licensePlate: "AAA111",
-        brand: "",
-        model: "",
+        brand: "Toyota",
+        model: "Supra",
+        color: "Rojo",
         year: 2025,
-        mileage: 0,
-        price: 0,
+        mileage: 2000,
+        price: 50000,
       },
       costs: {
-        impuestoVehicular: 0,
-        multasTributarias: 0,
-        papeletas: 0,
-        soat: 0,
-        gnv: 0,
+        impuestoVehicular: 200,
+        multasTributarias: 200,
+        papeletas: 200,
+        soat: 200,
+        gnv: 200,
       },
       firstLinks: [],
       lastLinks: [],
       years: [],
       activeTab: 0,
+      carImageSrc: null,
     };
   },
   methods: {
-    cleanFilters(item) {
-      this.search[item] = "";
+    cleanFilters(key) {
+      if (this.search.hasOwnProperty(key)) {
+        this.search[key] = "";
+      } else if (this.costs.hasOwnProperty(key)) {
+        this.costs[key] = "";
+      }
       this.firstLinks = [];
       this.lastLinks = [];
     },
@@ -480,14 +526,15 @@ export default {
         },
       ];
     },
-    searchPosts() {
+    async searchPosts() {
       if (this.activeTab == 0) {
         if (this.isFirstFormValid()) {
           this.activeTab = 1;
+          await this.fetchCarImage();
         }
       } else if (this.activeTab == 1) {
         if (this.isLastFormValid()) {
-          const value = [...this.search, ...this.costs];
+          this.exportToPDF();
           this.$notify({
             title: "Los datos han sido guardados exitosamente.",
             icon: "fa-solid fa-circle-exclamation",
@@ -540,6 +587,201 @@ export default {
         });
       }
       return allValid;
+    },
+    onInputDecimal(field, value) {
+      console.log(value);
+      console.log(typeof value);
+      if (typeof value !== "string") value = String(value);
+
+      value = value
+        .replace(/,/g, "") // elimina comas
+        .replace(/[^0-9.]/g, "") // elimina todo menos números y punto
+        .replace(/(\..*)\./g, "$1") // evita múltiples puntos
+        .replace(/^(\d*\.\d{0,2}).*$/, "$1"); // máximo 2 decimales
+
+      console.log("value: ", value);
+
+      this.costs[field] = parseFloat(value) || "";
+    },
+    exportToPDF() {
+      const doc = new jsPDF();
+      const title = "Reporte del Vehículo";
+
+      // Título centrado
+      doc.setFontSize(16);
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const textWidth = doc.getTextWidth(title);
+      const x = (pageWidth - textWidth) / 2;
+      doc.text(title, x, 24);
+
+      // Subtítulo 1
+      doc.setFontSize(13);
+      doc.text("Información General", 14, 36);
+
+      // Tabla 1: Información general
+      autoTable(doc, {
+        startY: 42,
+        head: [["Campo", "Valor"]],
+        body: Object.entries(this.search || {}).map(([key, value]) => [
+          this.formatFieldName(key),
+          this.formatKeyValue(key, value),
+        ]),
+        styles: { fontSize: 10 },
+        theme: "grid",
+        margin: { left: 14, right: 14 },
+        headStyles: { fillColor: [52, 73, 94] },
+        didDrawPage: (data) => {
+          doc.lastAutoTableFinalY = data.cursor.y;
+        },
+      });
+
+      // Subtítulo 2
+      const startY2 = doc.lastAutoTableFinalY + 10;
+      doc.setFontSize(13);
+      doc.text("Gastos Adicionales", 14, startY2);
+
+      const exchangeRate = this.getExchangeRate();
+      const gastosBody = Object.entries(this.costs || {}).map(
+        ([key, value]) => {
+          const montoPEN = Number(value || 0);
+          const montoUSD = montoPEN / exchangeRate;
+          return [
+            this.formatFieldName(key),
+            `$ ${montoUSD.toFixed(2)}`,
+            `S/. ${montoPEN.toFixed(2)}`,
+          ];
+        }
+      );
+
+      const totalCostsPEN = Object.values(this.costs).reduce(
+        (acc, val) => acc + Number(val || 0),
+        0
+      );
+      const totalCostsUSD = totalCostsPEN / exchangeRate;
+
+      // Fila total
+      gastosBody.push([
+        { content: "Total", styles: { fontStyle: "bold" } },
+        {
+          content: `$ ${totalCostsUSD.toFixed(2)}`,
+          styles: { fontStyle: "bold" },
+        },
+        {
+          content: `S/. ${totalCostsPEN.toFixed(2)}`,
+          styles: { fontStyle: "bold" },
+        },
+      ]);
+
+      autoTable(doc, {
+        startY: startY2 + 4,
+        head: [["Concepto", "Monto $", "Monto S/."]],
+        body: gastosBody,
+        styles: { fontSize: 10 },
+        theme: "grid",
+        margin: { left: 14, right: 14 },
+        headStyles: { fillColor: [22, 160, 133] },
+        didDrawPage: (data) => {
+          doc.lastAutoTableFinalY = data.cursor.y;
+        },
+      });
+
+      // Subtítulo 3
+      const startY3 = doc.lastAutoTableFinalY + 10;
+      doc.setFontSize(13);
+      doc.text("Resumen de Costos", 14, startY3);
+
+      const priceUSD = Number(this.search.price || 0);
+      const pricePEN = priceUSD * exchangeRate;
+      const totalVehicleCostPEN = pricePEN + totalCostsPEN;
+      const totalVehicleCostUSD = priceUSD + totalCostsUSD;
+
+      // Tabla resumen
+      autoTable(doc, {
+        startY: startY3 + 4,
+        head: [["Concepto", "Monto $", "Monto S/."]],
+        body: [
+          [
+            "Precio de compra",
+            `$ ${priceUSD.toFixed(2)}`,
+            `S/. ${pricePEN.toFixed(2)}`,
+          ],
+          [
+            "Gastos adicionales",
+            `$ ${totalCostsUSD.toFixed(2)}`,
+            `S/. ${totalCostsPEN.toFixed(2)}`,
+          ],
+          [
+            { content: "Costo total estimado", styles: { fontStyle: "bold" } },
+            {
+              content: `$ ${totalVehicleCostUSD.toFixed(2)}`,
+              styles: { fontStyle: "bold" },
+            },
+            {
+              content: `S/. ${totalVehicleCostPEN.toFixed(2)}`,
+              styles: { fontStyle: "bold" },
+            },
+          ],
+        ],
+        styles: { fontSize: 10 },
+        theme: "grid",
+        margin: { left: 14, right: 14 },
+        headStyles: { fillColor: [149, 165, 166] },
+      });
+
+      doc.save("reporte-vehiculo.pdf");
+    },
+    formatFieldName(field) {
+      const map = {
+        licensePlate: "Placa",
+        brand: "Marca",
+        model: "Modelo",
+        year: "Año",
+        mileage: "Kilometraje",
+        price: "Precio de Compra",
+        impuestoVehicular: "Impuesto Vehicular",
+        multasTributarias: "Multas Tributarias",
+        papeletas: "Papeletas",
+        soat: "Soat",
+        gnv: "GNV",
+      };
+      return map[field] || field;
+    },
+    formatKeyValue(key, field) {
+      const map = {
+        licensePlate: field,
+        brand: field,
+        model: field,
+        year: "Año",
+        mileage: `${field} km`,
+        price: `$ ${field}`,
+        impuestoVehicular: `S/. ${field}`,
+        multasTributarias: `S/. ${field}`,
+        papeletas: `S/. ${field}`,
+        soat: `S/. ${field}`,
+        gnv: `S/. ${field}`,
+      };
+      return map[key] || field;
+    },
+    async fetchCarImage() {
+      const q = `${this.search.year} ${this.search.brand} ${this.search.model} ${this.search.color}`;
+      const res = await axios.get(
+        "https://www.googleapis.com/customsearch/v1",
+        {
+          params: {
+            key: "AIzaSyDtPZnelWfhIWIhsgFXvg52dehEKkFzaA0",
+            cx: "e79acdb95f97041d4",
+            q,
+            searchType: "image",
+            num: 1,
+          },
+        }
+      );
+      if (res.data && res.data.items && res.data.items.length) {
+        this.carImageSrc = res.data.items[0].link;
+      }
+    },
+    getExchangeRate() {
+      return 3.6;
     },
   },
   computed: {
