@@ -45,7 +45,6 @@
           </div>
           <div class="col-md-6">
             <v-text-field
-              disabled
               type="identification"
               label="DNI"
               placeholder="DNI"

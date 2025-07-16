@@ -5,7 +5,12 @@
         <v-col cols="9" md="9">
           <v-tabs centered dark v-model="activeTab">
             <v-tab tabindex="0"> Información General </v-tab>
-            <v-tab tabindex="1"> Gastos Adicionales </v-tab>
+            <v-tab
+              tabindex="1"
+              v-if="isLicenseCompleted && isFirstFormCompleted"
+            >
+              Gastos Adicionales
+            </v-tab>
 
             <v-tab-item style="background-color: #1e1e1e; padding-top: 1rem">
               <v-card flat dark>
@@ -13,7 +18,7 @@
                   <v-col>
                     <!-- Search Section -->
                     <v-row class="mb-6" align="center">
-                      <v-col cols="3" md="3">
+                      <v-col cols="2" md="2">
                         <v-text-field
                           v-model="search.licensePlate"
                           label="Placa"
@@ -22,47 +27,51 @@
                           dense
                           clearable
                           :rules="[licensePlateRule]"
-                          @click:clear="cleanFilters(search.licensePlate)"
+                          @click:clear="
+                            cleanFilters(search.licensePlate, 'licensePlate')
+                          "
                           @input="
                             search.licensePlate =
                               search.licensePlate.toUpperCase()
                           "
                         />
                       </v-col>
-                      <v-col cols="3" md="3">
+                      <v-col cols="2" md="2">
+                        <v-btn
+                          color="success"
+                          dark
+                          @click="validatePlate"
+                          :disabled="!isLicenseRuleCompleted"
+                        >
+                          Validar
+                        </v-btn>
+                      </v-col>
+                      <v-col cols="3" md="3" v-if="isLicenseCompleted">
                         <v-text-field
-                          v-model="search.brand"
-                          label="Marca"
+                          v-model="search.price"
+                          label="Precio"
                           type="text"
+                          maxlength="6"
                           dense
+                          prefix="$"
                           clearable
-                          @click:clear="cleanFilters(search.brand)"
+                          :rules="[priceRule]"
+                          @click:clear="cleanFilters(search.price)"
                         />
                       </v-col>
-                      <v-col cols="3" md="3">
+                      <v-col cols="2" md="2" v-if="isLicenseCompleted">
                         <v-text-field
-                          v-model="search.model"
-                          label="Modelo"
+                          v-model="search.year"
+                          label="Año"
                           type="text"
+                          maxlength="4"
                           dense
                           clearable
-                          @click:clear="cleanFilters(search.model)"
+                          :rules="[yearRule]"
+                          @click:clear="cleanFilters(search.year)"
                         />
                       </v-col>
-                      <v-col cols="3" md="3">
-                        <v-text-field
-                          v-model="search.color"
-                          label="Color"
-                          type="text"
-                          dense
-                          clearable
-                          @click:clear="cleanFilters(search.color)"
-                        />
-                      </v-col>
-                    </v-row>
-
-                    <v-row>
-                      <v-col cols="4" md="4">
+                      <v-col cols="3" md="3" v-if="isLicenseCompleted">
                         <v-text-field
                           v-model="search.mileage"
                           label="Kilometraje"
@@ -73,47 +82,42 @@
                           clearable
                           :rules="[mileageRule]"
                           @click:clear="cleanFilters(search.mileage)"
-                          @input="
-                            search.mileage = search.mileage.replace(
-                              /[^0-9]/g,
-                              ''
-                            )
-                          "
+                        />
+                      </v-col>
+                    </v-row>
+
+                    <v-row v-if="isLicenseCompleted">
+                      <v-col cols="4" md="4">
+                        <v-text-field
+                          v-model="search.brand"
+                          label="Marca"
+                          type="text"
+                          dense
+                          clearable
+                          :rules="[textRule]"
+                          @click:clear="cleanFilters(search.brand)"
                         />
                       </v-col>
                       <v-col cols="4" md="4">
                         <v-text-field
-                          v-model="search.year"
-                          label="Año"
+                          v-model="search.model"
+                          label="Modelo"
                           type="text"
-                          maxlength="4"
                           dense
                           clearable
-                          :rules="[yearRule]"
-                          @click:clear="cleanFilters(search.year)"
-                          @input="
-                            search.year = search.year.replace(/[^0-9]/g, '')
-                          "
+                          :rules="[textRule]"
+                          @click:clear="cleanFilters(search.model)"
                         />
                       </v-col>
                       <v-col cols="4" md="4">
                         <v-text-field
-                          v-model="search.price"
-                          label="Precio"
+                          v-model="search.color"
+                          label="Color"
                           type="text"
-                          maxlength="12"
                           dense
-                          prefix="$"
                           clearable
-                          :rules="[priceRule]"
-                          @click:clear="cleanFilters(search.price)"
-                          @input="
-                            this.search.price = $event.target.value
-                              .toString()
-                              .replace(/,/g, '')
-                              .replace(/[^0-9.]/g, '')
-                              .replace(/(\..*)\./g, '$1')
-                          "
+                          :rules="[textRule]"
+                          @click:clear="cleanFilters(search.color)"
                         />
                       </v-col>
                     </v-row>
@@ -232,7 +236,7 @@
             </v-tab-item>
           </v-tabs>
 
-          <v-row>
+          <v-row v-if="isLicenseCompleted">
             <v-col cols="12" md="12" class="mt-4">
               <v-btn @click="searchPosts" block color="primary" dark
                 >{{ btnText }}
@@ -328,21 +332,24 @@ import axios from "axios";
 export default {
   data() {
     return {
+      isLicenseCompleted: false,
+      isLicenseRuleCompleted: false,
+      isFirstFormCompleted: false,
       search: {
-        licensePlate: "AAA111",
-        brand: "Toyota",
-        model: "Supra",
-        color: "Rojo",
+        licensePlate: "",
+        brand: "",
+        model: "",
+        color: "",
         year: 2025,
-        mileage: 2000,
-        price: 50000,
+        mileage: 0,
+        price: 0,
       },
       costs: {
-        impuestoVehicular: 200,
-        multasTributarias: 200,
-        papeletas: 200,
-        soat: 200,
-        gnv: 200,
+        impuestoVehicular: 0,
+        multasTributarias: 0,
+        papeletas: 0,
+        soat: 0,
+        gnv: 0,
       },
       firstLinks: [],
       lastLinks: [],
@@ -352,7 +359,42 @@ export default {
     };
   },
   methods: {
-    cleanFilters(key) {
+    cleanAllFilters() {
+      this.search = {
+        licensePlate: "",
+        brand: "",
+        model: "",
+        color: "",
+        year: 2025,
+        mileage: 0,
+        price: 0,
+      };
+      this.costs = {
+        impuestoVehicular: 0,
+        multasTributarias: 0,
+        papeletas: 0,
+        soat: 0,
+        gnv: 0,
+      };
+    },
+    cleanWithoutLicense() {
+      const lastLicense = this.search.licensePlate;
+      this.search = {
+        licensePlate: lastLicense,
+        brand: "",
+        model: "",
+        color: "",
+        year: 2025,
+        mileage: 0,
+        price: 0,
+      };
+    },
+    cleanFilters(key, name) {
+      if (name == "licensePlate") {
+        this.isLicenseRuleCompleted = false;
+        this.isLicenseCompleted = false;
+        this.cleanAllFilters();
+      }
       if (this.search.hasOwnProperty(key)) {
         this.search[key] = "";
       } else if (this.costs.hasOwnProperty(key)) {
@@ -446,42 +488,42 @@ export default {
             },
           ],
         },
-        // {
-        //   id: 4,
-        //   name: "sat provincia",
-        //   pages: [
-        //     {
-        //       id: 41,
-        //       name: "papeletas trujillo",
-        //       link: "https://satt.gob.pe/servicios/record-de-infracciones",
-        //       image: require("@/assets/img/papeletas_trujillo.png"),
-        //     },
-        //     {
-        //       id: 42,
-        //       name: "papeletas ica",
-        //       link: "https://m.satica.gob.pe/consultapapeletas.php",
-        //       image: require("@/assets/img/papeletas_ica.png"),
-        //     },
-        //     {
-        //       id: 43,
-        //       name: "papeletas arequipa",
-        //       link: "https://www.muniarequipa.gob.pe/consulta-de-papeletas/",
-        //       image: require("@/assets/img/papeletas_arequipa.png"),
-        //     },
-        //     {
-        //       id: 44,
-        //       name: "impuesto vehicular arequipa",
-        //       link: "https://muniarequipa.gob.pe/oficina-virtual/impuesto-vehicular.html",
-        //       image: require("@/assets/img/impuestos_vehicular_arequipa.png"),
-        //     },
-        //     {
-        //       id: 45,
-        //       name: "pagos piura",
-        //       link: "https://satp.gob.pe/sistema-pagos/",
-        //       image: require("@/assets/img/pagos_piura.png"),
-        //     },
-        //   ],
-        // },
+        {
+          id: 4,
+          name: "sat provincia",
+          pages: [
+            {
+              id: 41,
+              name: "papeletas trujillo",
+              link: "https://satt.gob.pe/servicios/record-de-infracciones",
+              image: require("@/assets/img/papeletas_trujillo.png"),
+            },
+            {
+              id: 42,
+              name: "papeletas ica",
+              link: "https://m.satica.gob.pe/consultapapeletas.php",
+              image: require("@/assets/img/papeletas_ica.png"),
+            },
+            {
+              id: 43,
+              name: "papeletas arequipa",
+              link: "https://www.muniarequipa.gob.pe/consulta-de-papeletas/",
+              image: require("@/assets/img/papeletas_arequipa.png"),
+            },
+            {
+              id: 44,
+              name: "impuesto vehicular arequipa",
+              link: "https://muniarequipa.gob.pe/oficina-virtual/impuesto-vehicular.html",
+              image: require("@/assets/img/impuestos_vehicular_arequipa.png"),
+            },
+            {
+              id: 45,
+              name: "pagos piura",
+              link: "https://satp.gob.pe/sistema-pagos/",
+              image: require("@/assets/img/pagos_piura.png"),
+            },
+          ],
+        },
         {
           id: 5,
           name: "gas",
@@ -530,7 +572,7 @@ export default {
       if (this.activeTab == 0) {
         if (this.isFirstFormValid()) {
           this.activeTab = 1;
-          await this.fetchCarImage();
+          // await this.fetchCarImage();
         }
       } else if (this.activeTab == 1) {
         if (this.isLastFormValid()) {
@@ -551,10 +593,14 @@ export default {
         this.yearRule(this.search.year),
         this.mileageRule(this.search.mileage),
         this.priceRule(this.search.price),
+        this.textRule(this.search.brand),
+        this.textRule(this.search.model),
+        this.textRule(this.search.color),
       ];
 
       const allValid = fields.every((f) => f === true);
       if (!allValid) {
+        this.isFirstFormCompleted = false;
         this.$notify({
           title:
             "Completa correctamente todos los campos requeridos antes de continuar",
@@ -563,8 +609,15 @@ export default {
           verticalAlign: "top",
           type: "warning",
         });
+      } else {
+        this.isFirstFormCompleted = true;
       }
+
       return allValid;
+    },
+    validatePlate() {
+      this.isLicenseCompleted = true;
+      this.getPosts();
     },
     isLastFormValid() {
       const fields = [
@@ -589,8 +642,6 @@ export default {
       return allValid;
     },
     onInputDecimal(field, value) {
-      console.log(value);
-      console.log(typeof value);
       if (typeof value !== "string") value = String(value);
 
       value = value
@@ -598,8 +649,6 @@ export default {
         .replace(/[^0-9.]/g, "") // elimina todo menos números y punto
         .replace(/(\..*)\./g, "$1") // evita múltiples puntos
         .replace(/^(\d*\.\d{0,2}).*$/, "$1"); // máximo 2 decimales
-
-      console.log("value: ", value);
 
       this.costs[field] = parseFloat(value) || "";
     },
@@ -787,54 +836,95 @@ export default {
   computed: {
     licensePlateRule() {
       return (v) => {
-        if (!v) return "La placa es requerida";
-        if (!/^[A-Z0-9]+$/.test(v))
+        if (!v) {
+          this.isLicenseCompleted = false;
+          this.isLicenseRuleCompleted = false;
+          this.cleanWithoutLicense();
+          return "La placa es requerida";
+        }
+        if (!/^[A-Z0-9]+$/.test(v)) {
+          this.isLicenseCompleted = false;
+          this.isLicenseRuleCompleted = false;
+          this.cleanWithoutLicense();
           return "Solo se permiten letras mayúsculas y números";
-        if (!/[A-Z]/.test(v))
+        }
+        if (!/[A-Z]/.test(v)) {
+          this.isLicenseCompleted = false;
+          this.isLicenseRuleCompleted = false;
+          this.cleanWithoutLicense();
           return "Debe contener al menos una letra mayúscula";
-        if (!/[0-9]/.test(v)) return "Debe contener al menos un número";
-        if (v.length !== 6)
+        }
+        if (!/[0-9]/.test(v)) {
+          this.isLicenseCompleted = false;
+          this.isLicenseRuleCompleted = false;
+          this.cleanWithoutLicense();
+          return "Debe contener al menos un número";
+        }
+        if (v.length !== 6) {
+          this.isLicenseCompleted = false;
+          this.isLicenseRuleCompleted = false;
+          this.cleanWithoutLicense();
           return "La placa debe tener exactamente 6 caracteres";
+        }
+        if (!/^[A-Z]{3}[0-9]{3}$/.test(v)) {
+          this.isLicenseCompleted = false;
+          this.isLicenseRuleCompleted = false;
+          this.cleanWithoutLicense();
+          return "La placa de contener el siguiente formato: ABC123";
+        }
+
+        this.isLicenseRuleCompleted = true;
         return true;
       };
     },
     yearRule() {
       return (v) => {
         const currentYear = new Date().getFullYear();
+        const yearNumber = parseInt(v);
         if (!v) return "El año es requerido";
-        if (!Number.isInteger(v)) return "El año debe ser un número";
-        if (v < 1990) return "El año no puede ser menor a 1990";
-        if (v > currentYear)
+        if (!Number.isInteger(yearNumber)) return "El año debe ser un número";
+        if (yearNumber < 1990) return "El año no puede ser menor a 1990";
+        if (yearNumber > currentYear)
           return `El año no puede ser mayor a ${currentYear}`;
         return true;
       };
     },
     mileageRule() {
       return (v) => {
+        const mileageNumber = parseInt(v);
         if (v === null || v === undefined || v === "")
           return "El kilometraje es requerido";
-        if (!Number.isInteger(v)) return "El kilometraje debe ser un número";
-        if (v < 0) return "El kilometraje no puede ser negativo";
-        if (v > 999999) return "El kilometraje no puede ser mayor a 999999";
+        if (!Number.isInteger(mileageNumber))
+          return "El kilometraje debe ser un número";
+        if (mileageNumber < 0) return "El kilometraje no puede ser negativo";
+        if (mileageNumber > 999999)
+          return "El kilometraje no puede ser mayor a 999999";
         return true;
       };
     },
     priceRule() {
       return (v) => {
+        const priceNumber = parseInt(v);
         if (v === null || v === undefined || v === "")
           return "Este campo es requerido";
-        if (v < 0) return "No puede ser negativo";
-        if (v == 0) return "Debe ser mayor a 0";
-        // if (!Number.isInteger(v)) return "Debe ser un número";
+        if (!Number.isInteger(priceNumber))
+          return "El precio debe ser un número";
+        if (priceNumber < 0) return "No puede ser negativo";
+        if (priceNumber == 0) return "Debe ser mayor a 0";
+        return true;
+      };
+    },
+    textRule() {
+      return (v) => {
+        if (v === null || v === undefined || v === "")
+          return "Este campo es requerido";
+
         return true;
       };
     },
     btnText() {
       return this.activeTab === 0 ? "Continuar" : "Guardar Gastos";
     },
-  },
-  mounted() {
-    this.getPosts();
   },
   watch: {
     activeTab(newVal, oldVal) {
